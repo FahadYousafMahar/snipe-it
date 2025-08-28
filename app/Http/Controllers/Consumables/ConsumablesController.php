@@ -272,8 +272,9 @@ class ConsumablesController extends Controller
 
         $delta = $request->input('quantity_changed');
         $note = $request->input('note');
-        // Adding a note to be used by the ConsumableObserver::updated when the log for stock update is stored.
+        // Adding a note and action to be used by the ConsumableObserver::updated when the log for stock update is stored.
         $consumable->log->note = $note;
+        $consumable->log->action = 'stock update';
 
         $consumable->qty = max(0, $consumable->qty + $delta);
         session()->put(['redirect_option' => $request->get('redirect_option')]);
