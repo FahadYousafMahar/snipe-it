@@ -36,6 +36,7 @@ class ConsumableObserver
             $logAction->created_at = date('Y-m-d H:i:s');
             $logAction->created_by = auth()->id();
             $logAction->log_meta = json_encode($changed);
+            $logAction->note = $consumable?->log?->note; // Add note if received from ConsumableController -> postUpdateStock()
             $logAction->logaction('update');
         }
     }
