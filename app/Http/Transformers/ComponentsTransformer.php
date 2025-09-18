@@ -43,6 +43,7 @@ class ComponentsTransformer
             'order_number'  => e($component->order_number),
             'purchase_date' =>  Helper::getFormattedDateObject($component->purchase_date, 'date'),
             'purchase_cost' => Helper::formatCurrencyOutput($component->purchase_cost),
+            'total_cost' => Helper::formatCurrencyOutput($component->totalCostSum()),
             'remaining'  => (int) $component->numRemaining(),
             'company'   => ($component->company) ? [
                 'id' => (int) $component->company->id,
@@ -76,7 +77,7 @@ class ComponentsTransformer
             $array[] = [
                 'assigned_pivot_id' => $asset->pivot->id,
                 'id' => (int) $asset->id,
-                'name' =>  e($asset->model->present()->name).' '.e($asset->present()->name),
+                'name' =>  e($asset->model->display_name).' '.e($asset->display_name),
                 'qty' => $asset->pivot->assigned_qty,
                 'note' => $asset->pivot->note,
                 'type' => 'asset',
