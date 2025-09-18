@@ -61,7 +61,7 @@ use NotificationChannels\MicrosoftTeams\MicrosoftTeamsMessage;
             ->from(($this->settings->webhook_botname) ? $this->settings->webhook_botname : 'Snipe-Bot')
             ->to($channel)
             ->attachment(function ($attachment) {
-                $item = $this->params['item'];
+                $item = $this->params['item'] ?? null;
                 $admin_user = $this->params['admin'];
                 $fields = [
                     'By' => '<'.$admin_user->present()->viewUrl().'|'.$admin_user->display_name.'>',
@@ -93,7 +93,7 @@ use NotificationChannels\MicrosoftTeams\MicrosoftTeamsMessage;
         }
             $message = class_basename(get_class($params['item'])) . ' Audited By '.$admin_user->display_name;
             $details = [
-                trans('mail.asset') => htmlspecialchars_decode($item->present()->name),
+                trans('mail.asset') => htmlspecialchars_decode($item->display_name),
                 trans('mail.notes') => $note ?: '',
                 trans('general.location') => $location ?: '',
                 ];

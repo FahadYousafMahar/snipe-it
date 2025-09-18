@@ -20,6 +20,7 @@ use App\Models\Consumable;
 use App\Models\License;
 use App\Models\User;
 use App\Notifications\CurrentInventory;
+use App\Notifications\WelcomeNotification;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
@@ -434,9 +435,20 @@ class UsersController extends Controller
             $user->password = $user->noPassword();
         }
 
-        app('App\Http\Requests\ImageUploadRequest')->handleImages($user, 600, 'image', 'avatars', 'avatar');
+        app('App\Http\Requests\ImageUploadRequest')->handleImages($user, 600, 'avatar', 'avatars', 'avatar');
         
         if ($user->save()) {
+
+            if (($user->activated == '1') && ($user->email != '') && ($request->input('send_welcome') == '1')) {
+
+                try {
+                    $user->notify(new WelcomeNotification($user));
+                } catch (\Exception $e) {
+                    Log::warning('Could not send welcome notification for user: ' . $e->getMessage());
+                }
+
+            }
+
             if ($request->filled('groups')) {
                 $user->groups()->sync($request->input('groups'));
             } else {
@@ -548,7 +560,7 @@ class UsersController extends Controller
                 Asset::where('assigned_type', User::class)
                     ->where('assigned_to', $user->id)->update(['location_id' => $request->input('location_id', null)]);
             }
-            app('App\Http\Requests\ImageUploadRequest')->handleImages($user, 600, 'image', 'avatars', 'avatar');
+            app('App\Http\Requests\ImageUploadRequest')->handleImages($user, 600, 'avatar', 'avatars', 'avatar');
 
             if ($user->save()) {
                 // Check if the request has groups passed and has a value, AND that the user us a superuser
